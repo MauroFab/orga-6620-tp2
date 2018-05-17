@@ -342,6 +342,146 @@ RM[1][0]    -> 0
 MR=100
 \end{lstlisting}
 
+\section{Validación de resultados}
+
+Para validar los resultados, haremos el trabajo de la cache manualmente, y contrastaremos con los resultados obtenidos.
+
+\subsection{Primer Test}
+
+W 0, 16\\ 
+Miss compulsivo. No se trae el bloque a cache. Misses: 1\\
+
+R 0\\ 
+Miss compulsivo. Se trae el bloque al conjunto 0. Misses: 2\\
+
+R 1024\\
+Miss compulsivo. Se trae el bloque al conjunto 0. Misses: 3\\
+
+R 8 \\
+Hit\\
+
+R 2050\\
+Miss compulsivo. Se trae el bloque al conjunto 0, se quita el que inicia con la posición 1024. Misses: 4\\
+
+R 3074 \\
+Miss compulsivo. Se trae el bloque al conjunto 0, se quita el que inicia con la posición 0. Misses:4\\
+
+
+W 8, 12 \\
+Miss de conflicto. Misses:5\\
+
+R 8 \\
+Miss de conflicto. Se trae el bloque al conjunto 0, se quita el que inicia con la posición 2048. Misses:6\\
+
+R 8 \\
+Hit\\
+ 
+W 3072, 255\\
+Hit\\
+
+W 2048, 10 \\
+Miss de conflicto. Se trae el bloque del 2048. Se saca el de 0. Misses :7\\
+
+R 0 \\
+Miss de conflicto Misses:9\\
+
+Tenemos entonces 9 misses en 12 operaciones. Esto es un miss rate de 2/3, en porcentaje aproximadamente \%67. Este resultado es identico al simulado en el programa\\
+
+\subsection{Segundo Test}
+
+R 0 \\
+Miss compulsivo. Se trae el bloque al conjunto 0. Misses: 1\\
+
+R 31\\
+Hit\\
+
+W 32, 10\\
+Miss. Se trae el bloque al conjunto 1. Misses: 2\\
+
+R 32\\
+Hit\\
+
+W 32, 20\\
+Hit\\
+
+R 32\\
+Hit\\
+
+R 1040 7\\
+Miss compulsivo. Este bloque comienza en la posición 1024. Se lo el bloque al conjunto 0.  Misses: 3\\
+
+R 2064 8\\ 
+Miss compulsivo. Este bloque comienza en la posición 2048. Se lo trae va al conjunto 0. Se saca el bloque que comienza con la dirección 0. Misses: 4\\
+
+R 32\\
+Miss de conflicto. Se trae el bloque al conjunto 0. Se saca el que comienza en la 1024.
+Misses: 5\\
+
+R 32\\
+Hit\\
+
+Tenemos entonces 5 misses en 10 operaciones. Esto es un miss rate de un \%50. Este resultado es identico al simulado en el programa.\\
+
+\subsection{Tercer Test}
+
+W 0, 1
+W 1, 2
+W 2, 3
+W 3, 4
+W 4, 5\\
+Misses: 5\\
+
+R 0\\
+Miss compulsivo. Misses: 6\\
+
+R 1
+R 2
+R 3
+R 4\\
+4 Hits\\
+
+Tenemos entonces 6 misses en 10 operaciones. Esto es un miss rate de un \%60. Este resultado es identico al simulado en el programa.\\
+
+\subsection{Cuarto Test}
+W 0, 1
+W 1, 2
+W 2, 3
+W 3, 4
+W 4, 5\\
+Misses: 5\\
+R 0 \\
+Misses: 6
+
+R 1
+R 2
+R 3
+R 4\\
+4 hits
+
+R 1024
+R 2048\\ 
+Misses: 8.Se saca al bloque que comienza con la posición de la memoria 0 de la cache\\ 
+
+R 0
+\\ Misses: 9
+R 1
+R 2
+R 3
+R 4
+\\ 4 hits
+
+Tenemos entonces 9 misses en 17 operaciones. Esto es un miss rate de un \%53. Este resultado no es identico al simulado en el programa.\\
+
+\subsection{Quinto Test}
+R 0
+R 1024
+R 3072
+R 2048
+R 0
+R 3072\\
+
+Y esto son todos misses, tenemos dos vias, todo va al conjunto 0, y tengo mas de 2 accesos a memoria antes de volver a buscar un dato. El miss rate es del \%100 y es idéntico al simulado.
+
 \section{Conclusiones}
 
 La implementación de la simulación nos premitió estudiar mas en detalle el funcionamiento de una caché de 2 vías. Las cachés
@@ -724,3 +864,4 @@ int cache_get_miss_rate() {
 
 
 \end{document}
+\grid
