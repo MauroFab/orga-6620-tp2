@@ -31,6 +31,8 @@
 \usepackage{float}
 \usepackage[caption = false]{subfig}
 
+\setcounter{secnumdepth}{0}
+
 \begin{document}
 
 %  FRONTPAGE
@@ -96,7 +98,7 @@ Este trabajo práctico debe ser implementado en C, y correr al menos en Linux.
 
 \section{Fecha de entrega}
 
-La última fecha de entrega y presentación ser\'a el jueves 26 de abril de 2018.
+La última fecha de entrega y presentación ser\'a el jueves 17 de mayo de 2018.
 
 \section{Introducción}\label{informe}
 La memoria a simular es una caché [1] asociativa por conjuntos de dos
@@ -134,11 +136,11 @@ Una vez que el archivo se abrió exitosamente, se procede a parsear y ejecutar l
 El programa imprime un detalle de los accesos a la caché simulada con el siguiente formato:
 
 \begin{itemize}
-\item \textit{WM} Indica un Write-Miss en la caché.
-\item \textit{WH[n][m][o]} Indica un Write-Hit en la vía \textit{n}, bloque \textit{m} y offset \textit{o}.
-\item \textit{RM[n][m]} Indica un Read-Miss y una consecuente carga del bloque \textit{m} en la vía \textit{n}.
-\item \textit{RH[n][m][o]} Indica un Read-Hit en la caché en la vía \textit{n}, bloque \textit{m} y offset \textit{o}.
-\item \textit{MR} Corresponde al Miss rate calculado.
+\item \textit{WM:} Indica un Write-Miss en la caché.
+\item \textit{WH[n][m][o]:} Indica un Write-Hit en la vía \textit{n}, bloque \textit{m} y offset \textit{o}.
+\item \textit{RM[n][m]:} Indica un Read-Miss y una consecuente carga del bloque \textit{m} en la vía \textit{n}.
+\item \textit{RH[n][m][o]:} Indica un Read-Hit en la caché en la vía \textit{n}, bloque \textit{m} y offset \textit{o}.
+\item \textit{MR:} Corresponde al Miss rate calculado.
 \end{itemize}
 
 Además, las operaciones de lectura indican el valor leído (desde la caché en caso de un RH o desde memoria en caso de un RM).
@@ -147,7 +149,36 @@ Como solamente hay 2 vías, fue posible implementar el reemplazo LRU utilizando 
 el estado "nuevo" si está en 1 y el estado "viejo" si está en cero. De esta forma no resultó necesario implementar
 un algoritmo complejo para llevar la cuenta de uso de cada bloque.
 
-TODO: dibujar el esquema de bits en las direcciones de memoria
+Debido a que los bloques son de 32 bytes, se requieren 5 bits para el offset. La caché
+tiene un tamaño de 1024 bytes, cada vía tiene 512 bytes. Los bloques son de 32 bytes
+y por lo tanto hay 16 grupos, por lo que se necesitan 4 bits para el índice.
+
+Para direccionar la memoria principal se requieren 12 bits en total, por lo tanto los
+3 bits restantes se utilizan para el tag.
+
+\begin{table}[h!]
+  \begin{center}
+    \label{tab:table1}
+    \begin{tabular}{|c|c|c|}
+        \cline{1-3}
+        tag (3 bits) & index (4 bits) & offset (5 bits)\\
+        \cline{1-3}
+    \end{tabular}
+    \caption{Dirección de memoria}
+  \end{center}
+\end{table}
+
+\begin{table}[h!]
+  \begin{center}
+    \label{tab:table1}
+    \begin{tabular}{|c|c|c|c|}
+        \cline{1-4}
+        tag (3 bits) & V (1 bit) & LRU (1 bit) & datos (32 bytes)\\
+        \cline{1-4}
+    \end{tabular}
+    \caption{Bloque en la caché}
+  \end{center}
+\end{table}
 
 \section{Compilación del programa}
 
@@ -323,9 +354,6 @@ escrituras (se comportan de la misma forma que si no existiera la caché).
 
 Es dificil llevar la cuenta de los bloques actualizados/reemplazados por las lecturas, por lo que desarrollar
 una salida detallada fue de gran utilidad para detectar errores de programación.
-
-
-\subsection{Futuras investigaciones}
 
 
 % SOlO codigos fuente hacia abajo, no hace falta editar!
