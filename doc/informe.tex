@@ -7,13 +7,24 @@
 \usepackage{listings}
 
 \lstset{
-language=C,
-tabsize=4,
-basicstyle=\fontsize{11}{13}\ttfamily\footnotesize,
-showspaces=false,
-showstringspaces=false,
-captionpos=b,
-breaklines=true
+    language=C,
+    tabsize=4,
+    basicstyle=\fontsize{11}{13}\ttfamily\footnotesize,
+    showspaces=false,
+    showstringspaces=false,
+    captionpos=b,
+    breaklines=true,
+    literate={á}{{\'a}}1
+        {ã}{{\~a}}1
+        {é}{{\'e}}1
+        {ó}{{\'o}}1
+        {í}{{\'i}}1
+        {ñ}{{\~n}}1
+        {¡}{{!`}}1
+        {¿}{{?`}}1
+        {ú}{{\'u}}1
+        {Í}{{\'I}}1
+    {Ó}{{\'O}}1
 }
 
 \usepackage{multirow}
