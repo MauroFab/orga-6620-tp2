@@ -1,0 +1,685 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+
+\usepackage{listings}
+\lstset{
+language=C,
+tabsize=4,
+basicstyle=\fontsize{11}{13}\ttfamily\footnotesize,
+showspaces=false,
+showstringspaces=false,
+captionpos=b,
+breaklines=true
+}
+
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[caption = false]{subfig}
+
+\begin{document}
+
+%  FRONTPAGE
+
+\begin{titlepage}
+  \noindent%
+  \begin{tabular}{@{}p{\textwidth}@{}}
+    \vspace{0.2cm}
+    \begin{center}
+    \Huge{\textbf{
+      Memorias caché
+    }}
+    \end{center}
+    \begin{center}
+      \Large{
+         66:20 Organizaci\'on de Computadoras
+      }
+    \end{center}
+    \vspace{0.2cm}\\
+  \end{tabular}
+  \vspace{4 cm}
+  \begin{center}
+    {\large
+      Trabajo práctico 2
+    }\\
+    \vspace{0.6cm}
+    {\Large
+      Axel Lijdens (95772)\\
+      Eduardo R Madariaga (90824)\\
+      Mauro Toscano (96890)
+    }
+  \end{center}
+  \vfill
+  \begin{center}
+  Univesidad de Buenos Aires - FIUBA
+  \end{center}
+\end{titlepage}
+
+
+\tableofcontents
+\pagebreak
+% Prologo
+
+\section{Objetivos}
+
+Familiarizarse con el funcionamiento de la memoria caché implementando una simulación de una caché dada.
+
+\section{Alcance}
+
+Este trabajo práctico es de elaboración grupal, evaluación individual, y de carácter obligatorio para todos alumnos del curso.
+
+\section{Requisitos}
+
+El trabajo deberá ser entregado personalmente, en la fecha estipulada, con una carátula que contenga los datos completos de todos los integrantes.
+
+Además, es necesario que el trabajo práctico incluya (entre otras cosas, ver sección 8), la presentación de los resultados obtenidos, explicando, cuando corresponda, con fundamentos reales, las causas o razones de cada resultado obtenido. Por este motivo, el dı́a de la entrega deben concurrir todos los integrantes del grupo.
+
+El informe deber\'a respetar el modelo de referencia que se encuentra en el grupo, y se valorar\'an aquellos escritos usando la herramienta TEX / LATEX.
+
+\section{Recursos}
+
+Este trabajo práctico debe ser implementado en C, y correr al menos en Linux.
+
+\section{Fecha de entrega}
+
+La última fecha de entrega y presentación ser\'a el jueves 26 de abril de 2018.
+
+\section{Introducción}\label{informe}
+La memoria a simular es una caché [1] asociativa por conjuntos de dos
+vı́as, de 1KB de capacidad, bloques de 32 bytes, polı́tica de reemplazo LRU
+y polı́tica de escritura WT/∼WA. Se asume que el espacio de direcciones es
+de 12 bits, y hay entonces una memoria principal a simular con un tamaño
+de 4KB. Estas memorias pueden ser implementadas como variables globales.
+Cada bloque de la memoria caché deberá contar con su metadata, incluyendo
+el bit V y el tag.
+
+% Desarrollo
+
+\section{Implementaci\'on del programa}
+
+Para el dise\~no del programa se empez\'o por establecer los par\'ametros de entrada necesarios:
+
+\begin{itemize}
+\item Un archivo de entrada
+\end{itemize}
+
+Teniendo en cuenta lo propuesto se escribi\'o el siguiente mensaje de ayuda:
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={Mensaje de ayuda del programa}]
+Uso: ./tp [archivo]
+\end{lstlisting}
+
+Asimismo, se debieron tener en cuenta y validar los siguientes casos en donde alg\'un factor es incorrecto y el mensaje devuelto por el probrama debe ser explicativo del error:
+
+\begin{itemize}
+\item \textbf{No se pudo abrir algun archivo:} Este error indica que el archivo indicado por parámetro de entrada no pudo ser abierto.
+\item \textbf{Error de formato:} El archivo de entrada no respetaba el formato especificado en el enunciado.
+\end{itemize}
+
+Una vez que el archivo se abrió exitosamente, se procede a parsear y ejecutar las acciones en forma secuencial.
+El programa imprime un detalle de los accesos a la caché simulada con el siguiente formato:
+
+\begin{itemize}
+\item \textit{WM} Indica un Write-Miss en la caché.
+\item \textit{WH[n][m][o]} Indica un Write-Hit en la vía \textit{n}, bloque \textit{m} y offset \textit{o}.
+\item \textit{RM[n][m]} Indica un Read-Miss y una consecuente carga del bloque \textit{m} en la vía \textit{n}.
+\item \textit{RH[n][m][o]} Indica un Read-Hit en la caché en la vía \textit{n}, bloque \textit{m} y offset \textit{o}.
+\item \textit{MR} Corresponde al Miss rate calculado.
+\end{itemize}
+
+Además, las operaciones de lectura indican el valor leído (desde la caché en caso de un RH o desde memoria en caso de un RM).
+
+Como solamente hay 2 vías, fue posible implementar el reemplazo LRU utilizando solamente 1 bit, el cuál indica
+el estado "nuevo" si está en 1 y el estado "viejo" si está en cero. De esta forma no resultó necesario implementar
+un algoritmo complejo para llevar la cuenta de uso de cada bloque.
+
+TODO: dibujar el esquema de bits en las direcciones de memoria
+
+\section{Compilación del programa}
+
+Para compilar el programa basta ejecutar la siguiente línea:
+
+\begin{center}
+\textbf{make}
+\end{center}
+
+\section{Corridas de prueba}
+
+A continuación se muestran los resultados de las ejecuciones del programa para cada archivo de pruebas:
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={prueba1.mem}]
+W 0, 16
+R 0
+R 1024
+R 8
+R 2050
+R 3074
+W 8, 12
+R 8
+R 8
+W 3072, 255
+W 2048, 10
+R 0
+MR
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={Resultado prueba1.mem}]
+WM
+RM[0][0]    -> 16
+RM[1][0]    -> 0
+RH[0][0][8] -> 0
+RM[1][0]    -> 0
+RM[0][0]    -> 0
+WM
+RM[1][0]    -> 12
+RH[1][0][8] -> 12
+WH[0][0][0]=255
+WM
+RH[1][0][0] -> 16
+MR=67
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={prueba2.mem}]
+R 0
+R 31
+W 32, 10
+R 32
+W 32, 20
+R 32
+R 1040
+R 2064
+R 32
+R 32
+MR
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={Resultado prueba2.mem}]
+RM[0][0]    -> 0
+RH[0][0][31] -> 0
+WM
+RM[0][1]    -> 10
+WH[0][1][0]=20
+RH[0][1][0] -> 20
+RM[1][0]    -> 0
+RM[0][0]    -> 0
+RH[0][1][0] -> 20
+RH[0][1][0] -> 20
+MR=50
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={prueba3.mem}]
+W 0, 1
+W 1, 2
+W 2, 3
+W 3, 4
+W 4, 5
+R 0
+R 1
+R 2
+R 3
+R 4
+MR
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={Resultado prueba3.mem}]
+WM
+WM
+WM
+WM
+WM
+RM[0][0]    -> 1
+RH[0][0][1] -> 2
+RH[0][0][2] -> 3
+RH[0][0][3] -> 4
+RH[0][0][4] -> 5
+MR=60
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={prueba4.mem}]
+W 0, 1
+W 1, 2
+W 2, 3
+W 3, 4
+W 4, 5
+R 0
+R 1
+R 2
+R 3
+R 4
+R 1024
+R 2048
+R 0
+R 1
+R 2
+R 3
+R 4
+MR
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={Resultado prueba4.mem}]
+WM
+WM
+WM
+WM
+WM
+RM[0][0]    -> 1
+RH[0][0][1] -> 2
+RH[0][0][2] -> 3
+RH[0][0][3] -> 4
+RH[0][0][4] -> 5
+RM[1][0]    -> 0
+RM[0][0]    -> 0
+RM[1][0]    -> 1
+RH[1][0][1] -> 2
+RH[1][0][2] -> 3
+RH[1][0][3] -> 4
+RH[1][0][4] -> 5
+MR=53
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={prueba5.mem}]
+R 0
+R 1024
+R 3072
+R 2048
+R 0
+R 3072
+MR
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={Resultado prueba5.mem}]
+RM[0][0]    -> 0
+RM[1][0]    -> 0
+RM[0][0]    -> 0
+RM[1][0]    -> 0
+RM[0][0]    -> 0
+RM[1][0]    -> 0
+MR=100
+\end{lstlisting}
+
+\section{Conclusiones}
+
+La implementación de la simulación nos premitió estudiar mas en detalle el funcionamiento de una caché de 2 vías. Las cachés
+del estilo WT/~WA tienen la ventaja de ser simples de implementar, ya que no hace falta considerar el estado "dirty",
+porque los datos siempre se escriben a la memoria principal. La desventaja es que no hay mejora de velocidad en las
+escrituras (se comportan de la misma forma que si no existiera la caché).
+
+
+\subsection{Problemas encontrados a lo largo del proyecto}
+
+Es dificil llevar la cuenta de los bloques actualizados/reemplazados por las lecturas, por lo que desarrollar
+una salida detallada fue de gran utilidad para detectar errores de programación.
+
+
+\subsection{Futuras investigaciones}
+
+
+% SOlO codigos fuente hacia abajo, no hace falta editar!
+
+\newpage
+
+\section{C\'odigos fuente}
+
+Repositorio: https://github.com/MauroFab/orga-6620-tp2
+
+\subsection{MakeFile}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={makefile}]
+
+tp: main.c cache.c cache.h
+	@gcc -ggdb -std=c99 -Wall -Wpedantic -Werror main.c cache.c -o tp -lm
+	@echo "LD tp"
+
+clean:
+	@rm -f tp
+
+.PHONY: clean
+
+\end{lstlisting}
+
+\subsection{Main}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={makefile}]
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "cache.h"
+
+#define MEM_SIZE 4096  // 4 KiB
+
+char memory[MEM_SIZE];
+
+/*
+ * Reinicia la tasa miss e invalida la cache
+ */
+void init() {
+  cache_init();
+}
+
+/*
+ * Si el adress esta en la cache devuelve su valor
+ * Si no lo carga de memory y devuelve -1
+ */
+static char read_byte(int address) {
+  if (address >= MEM_SIZE) {
+    return -1;
+  }
+  char rv = cache_read_byte(address, memory);
+  if (rv == -1) {
+    return memory[address];
+  }
+  return rv;
+}
+
+static int write_byte(int address, unsigned char value) {
+  if (address >= MEM_SIZE) {
+    return -1;
+  }
+  return cache_write_byte(address, value, memory);
+}
+
+static bool _process_file(FILE *file) {
+  while (!feof(file)) {
+    unsigned int address;
+    unsigned int value;
+    char command = '\0';
+
+    if (fscanf(file, "%c", &command) != 1) {
+      /* verifica que se trate el fin de archivo */
+      return (feof(file) > 0);
+    }
+
+    switch (command) {
+      case 'R':
+        if (fscanf(file, "%u", &address) != 1) {
+          return false;
+        }
+        printf("%d\n", read_byte(address));
+        break;
+
+      case 'W':
+        if (fscanf(file, "%u, %u", &address, &value) != 2) {
+          return false;
+        }
+        write_byte(address, value);
+        break;
+
+      case 'M':
+        if (fscanf(file, "%c", &command) != 1) {
+          return false;
+        }
+        if (command != 'R') {
+          return false;
+        }
+
+        printf("MR=%d\n", cache_get_miss_rate());
+        break;
+
+      default:
+        return false;
+    }
+
+    /* lee el fin de linea */
+    if (fread(&value, 1, 1, file) == 0) {
+      break;
+    }
+  }
+
+  return true;
+}
+
+int main(int argc, const char *argv[]) {
+  if (argc != 2) {
+    printf("Uso: %s [archivo]\n", argv[0]);
+    return EXIT_FAILURE;
+  }
+
+  const char *filename = argv[1];
+  FILE *file = fopen(filename, "r");
+  if (file == NULL) {
+    printf("No se pudo abrir el archivo.\n");
+    return EXIT_FAILURE;
+  }
+
+  init();
+
+  if (!_process_file(file)) {
+    goto error;
+  }
+
+  fclose(file);
+  return EXIT_SUCCESS;
+
+error:
+  fclose(file);
+  printf("Error de formato.\n");
+  return EXIT_FAILURE;
+}
+
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={makefile}]
+
+#ifndef CACHE_H_
+#define CACHE_H_
+
+#include <stdint.h>
+
+/**
+ * bits: 31            11    9       5        0
+ *       --------------------------------------
+ *       |             | tag | index | offset |
+ *       --------------------------------------
+ */
+
+/** Tanaño total de la cache */
+#define CACHE_SIZE 1024
+/** Tamaño de cada bloque de la cache */
+#define CACHE_BS 32
+/** Número de vías. */
+#define CACHE_WAYS_NUM 2
+
+/** Tamaño de cada vía. */
+#define CACHE_WAY_SIZE (CACHE_SIZE / CACHE_WAYS_NUM)
+#define CACHE_BLOCKS_PER_WAY ((CACHE_SIZE / CACHE_WAYS_NUM) / CACHE_BS)
+
+void cache_init();
+char cache_read_byte(int address, const char *memory);
+int cache_write_byte(int address, unsigned char value, char *memory);
+int cache_get_miss_rate();
+
+#endif
+
+
+\end{lstlisting}
+
+\begin{lstlisting}[numbers=left, tabsize=2, basicstyle=\fontsize{11}{13}\ttfamily, frame=single, caption={makefile}]
+
+#include "cache.h"
+#include <math.h>
+#include <stdint.h>
+#include <string.h>
+
+#define ENABLE_LOG 1
+
+#if ENABLE_LOG
+#include <stdio.h>
+#define LOG(...) (printf(__VA_ARGS__))
+#else
+#define LOG(...) \
+  do {           \
+  } while (0)
+#endif
+
+#define BLOCK(way, index) (cache.entries[way][index])
+
+/** Marca la entrada del cache como válida. */
+#define SET_VALID(way, index) (BLOCK(way, index).is_valid = 1)
+/** Devuelve "true" si el cache está marcado como válido. */
+#define IS_VALID(way, index) (BLOCK(way, index).is_valid == 1)
+
+/** Marca la entrada del cache como nueva (LRU). */
+#define SET_NEW(way, index) (BLOCK(way, index).is_new = 1)
+/** Marca la entrada del cache como vieja (LRU). */
+#define SET_OLD(way, index) (BLOCK(way, index).is_new = 0)
+/** Retorns "true" si la entrada es vieja. */
+#define IS_OLD(way, index) (BLOCK(way, index).is_new == 0)
+
+/** Obtiene el offset desde la dirección de memoria. */
+#define OFFSET(address) (address & 0x1F)
+/** Obtiene el index desde la dirección de memoria. */
+#define INDEX(address) ((address >> 5) & 0x0F)
+/** Obtiene el tag desde la dirección de memoria. */
+#define TAG(address) ((address >> 9) & 0x07)
+
+/** Bloque de datos en el cache. */
+typedef uint8_t cache_block_t[CACHE_BS];
+
+/** Entrada en el cache. */
+typedef struct {
+  uint8_t tag : 3;
+  uint8_t is_valid : 1;
+  uint8_t is_new : 1;
+  cache_block_t data;
+} cache_entry_t;
+
+/** Cache. */
+typedef struct {
+  cache_entry_t entries[CACHE_WAYS_NUM][CACHE_BLOCKS_PER_WAY];
+  double miss_count;
+  double hit_count;
+} cache_t;
+
+/** Instancia global del cache. */
+static cache_t cache;
+
+/**
+ * @brief Carga un bloque de memoria principal a a la cache.
+ *
+ * @param index El indice del conjunto de la cache.
+ * @param tag El tag del bloque.
+ * @param mem Memoria principal.
+ * @return La vía en la cual se cargó el bloque.
+ */
+static void _load_block(int index, int tag, const char *mem) {
+  int way = 0;
+  if (IS_OLD(0, index)) {
+    way = 0;
+  } else {
+    way = 1;
+  }
+
+  cache_entry_t *entry = &cache.entries[way][index];
+
+  /* copia los datos y actualiza los metadatos */
+  memcpy(entry->data, mem, CACHE_BS);
+
+  SET_NEW(way, index);
+  SET_OLD(!way, index);
+  SET_VALID(way, index);
+  entry->tag = tag;
+
+  LOG("RM[%d][%d]    -> ", way, index);
+}
+
+/**
+ * @brief Lee un byte del cache y actualiza los metadatos.
+ *
+ * @param way Via a leer.
+ * @param index Indice del groupo.
+ * @param offset Offset del bloque.
+ * @return char Dato.
+ */
+static char _read_cache(int way, int index, int offset) {
+  cache.entries[way][index].is_new = 1;
+  cache.entries[!way][index].is_new = 0;
+  char value = cache.entries[way][index].data[offset];
+
+  LOG("RH[%d][%d][%d] -> ", way, index, offset);
+  return value;
+}
+
+/**
+ * @brief Inicializa el cache.
+ *
+ */
+void cache_init() {
+  memset(&cache, 0, sizeof(cache_t));
+}
+
+/**
+ * @brief Lee un byte del cache.
+ *
+ * @param address Dirección del byte a leer.
+ * @param memoria Memoria.
+ * @return unsigned char Byte leído.
+ */
+char cache_read_byte(int address, const char *memory) {
+  int index = INDEX(address);
+  int offset = OFFSET(address);
+
+  if (IS_VALID(0, index) && TAG(address) == cache.entries[0][index].tag) {
+    cache.hit_count++;
+    return _read_cache(0, index, offset);
+  } else if (IS_VALID(1, index) && TAG(address) == cache.entries[1][index].tag) {
+    cache.hit_count++;
+    return _read_cache(1, index, offset);
+  } else {
+    cache.miss_count++;
+    _load_block(index, TAG(address), memory);
+    return -1;
+  }
+}
+
+/**
+ * @brief Escribe en la memoria y si en necesario ne el cache.
+ *
+ * @param address Dirección de memoria en la que se escribe.
+ * @param value Valor a escribir.
+ * @param memory Memoria principal.
+ * @return int 0 si fue un hit, -1 si fue un miss.
+ */
+int cache_write_byte(int address, unsigned char value, char *memory) {
+  int index = INDEX(address);
+  int offset = OFFSET(address);
+
+  int rv = 0;
+
+  if (IS_VALID(0, index) && TAG(address) == cache.entries[0][index].tag) {
+    cache.hit_count++;
+    *(cache.entries[0][index].data + offset) = value;
+    cache.entries[0][index].is_new = 1;
+    cache.entries[1][index].is_new = 0;
+    LOG("WH[%d][%d][%d]=%d\n", 0, index, offset, value);
+  } else if (IS_VALID(1, index) && TAG(address) == cache.entries[1][index].tag) {
+    cache.hit_count++;
+    *(cache.entries[1][index].data + offset) = value;
+    cache.entries[1][index].is_new = 1;
+    cache.entries[0][index].is_new = 0;
+    LOG("WH[%d][%d][%d]=%d\n", 1, index, offset, value);
+  } else {
+    cache.miss_count++;
+    LOG("WM\n");
+    rv = -1;
+  }
+
+  /* WT: siempre escribe a memoria */
+  *(memory + address) = value;
+  return rv;
+}
+
+/**
+ * @brief Devuelve el miss rate redondeado al entero mas cercano.
+ *
+ * @return uint64_t miss rate.
+ */
+int cache_get_miss_rate() {
+  return round((cache.miss_count * 100) / (cache.miss_count + cache.hit_count));
+}
+
+\end{lstlisting}
+
+
+\end{document}
