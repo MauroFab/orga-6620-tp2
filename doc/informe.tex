@@ -1,9 +1,11 @@
-\documentclass[11pt,a4paper]{article}
-\usepackage[spanish]{babel}
+\documentclass[11pt,a4paper, spanish]{article}
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\selectlanguage{spanish}
 \usepackage{graphicx}
-
 \usepackage{listings}
+
 \lstset{
 language=C,
 tabsize=4,
@@ -73,7 +75,7 @@ Este trabajo práctico es de elaboración grupal, evaluación individual, y de c
 
 El trabajo deberá ser entregado personalmente, en la fecha estipulada, con una carátula que contenga los datos completos de todos los integrantes.
 
-Además, es necesario que el trabajo práctico incluya (entre otras cosas, ver sección 8), la presentación de los resultados obtenidos, explicando, cuando corresponda, con fundamentos reales, las causas o razones de cada resultado obtenido. Por este motivo, el dı́a de la entrega deben concurrir todos los integrantes del grupo.
+Además, es necesario que el trabajo práctico incluya (entre otras cosas, ver sección 8), la presentación de los resultados obtenidos, explicando, cuando corresponda, con fundamentos reales, las causas o razones de cada resultado obtenido. Por este motivo, el día de la entrega deben concurrir todos los integrantes del grupo.
 
 El informe deber\'a respetar el modelo de referencia que se encuentra en el grupo, y se valorar\'an aquellos escritos usando la herramienta TEX / LATEX.
 
@@ -87,8 +89,8 @@ La última fecha de entrega y presentación ser\'a el jueves 26 de abril de 2018
 
 \section{Introducción}\label{informe}
 La memoria a simular es una caché [1] asociativa por conjuntos de dos
-vı́as, de 1KB de capacidad, bloques de 32 bytes, polı́tica de reemplazo LRU
-y polı́tica de escritura WT/∼WA. Se asume que el espacio de direcciones es
+vías, de 1KB de capacidad, bloques de 32 bytes, política de reemplazo LRU
+y política de escritura WT/$\sim$ WA. Se asume que el espacio de direcciones es
 de 12 bits, y hay entonces una memoria principal a simular con un tamaño
 de 4KB. Estas memorias pueden ser implementadas como variables globales.
 Cada bloque de la memoria caché deberá contar con su metadata, incluyendo
@@ -474,7 +476,7 @@ error:
  *       --------------------------------------
  */
 
-/** Tanaño total de la cache */
+/** Tamaño total de la cache */
 #define CACHE_SIZE 1024
 /** Tamaño de cada bloque de la cache */
 #define CACHE_BS 32
